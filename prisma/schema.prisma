@@ -1,0 +1,94 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../app/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id      String    @id @default(uuid())
+  email   String    @unique
+  name    String?
+  imageUrl   String?
+  clerkUserId String    @unique
+  courses Course[]
+  assignments   Assignment[]
+  notes   Note[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("user")
+}
+
+model Course {
+  id      String    @id @default(uuid())
+  title    String
+  semester String?
+  isActive Boolean  @default(true)
+  user   User      @relation(fields: [userId], references: [clerkUserId], onDelete: Cascade)
+  userId String
+  assignments   Assignment[]
+  notes   Note[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([title, semester, userId])
+  @@index([userId])
+  @@map("course")
+}
+
+model Assignment {
+  id      String    @id @default(uuid())
+  title    String
+  description String?
+  dueDate DateTime?
+  priority Priority @default(MEDIUM)
+  status Status @default(TODO)
+  isActive Boolean  @default(true)
+  userId  String
+  courseId String
+  user    User      @relation(fields: [userId], references: [clerkUserId], onDelete: Cascade)
+  course  Course    @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([title, courseId])
+  @@index([status])
+  @@index([priority])
+  @@index([isActive])
+  @@index([dueDate])
+  @@index([courseId])
+  @@index([userId])
+  @@map("assignment")
+}
+
+model Note {
+  id      String    @id @default(uuid())
+  title   String
+  content String @db.Text
+  isActive Boolean  @default(true)
+  userId  String
+  courseId String
+  user    User      @relation(fields: [userId], references: [clerkUserId], onDelete: Cascade)
+  course  Course    @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([courseId])
+  @@index([userId])
+  @@map("note")
+}
+
+enum Priority {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+enum Status {
+  TODO
+  IN_PROGRESS
+  DONE
+}
