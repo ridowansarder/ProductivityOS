@@ -2,10 +2,12 @@ import prisma from "@/lib/prisma";
 import { getOrCreateUser } from "@/lib/getOrCreateUser";
 import { notFound } from "next/navigation";
 import { UpdateCourseModal } from "./UpdateCourseModal";
-import ArchiveButton from "@/components/ArchiveButton";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { AddAssignmentModal } from "./AddAssignmentModal";
+import Link from "next/link";
+import ConfirmCourseArchiveButton from "@/components/CourseArchiveButton";
 
 interface CourseDetailsPageProps {
   params: Promise<{ id: string }>;
@@ -14,7 +16,7 @@ interface CourseDetailsPageProps {
 const CourseDetailsPage = async ({ params }: CourseDetailsPageProps) => {
   const { id } = await params;
   const user = await getOrCreateUser();
-  if (!user) return null;
+  if (!user) throw new Error("Unauthorized");
 
   const course = await prisma.course.findFirst({
     where: {
@@ -48,7 +50,7 @@ const CourseDetailsPage = async ({ params }: CourseDetailsPageProps) => {
         </div>
 
         <div className="flex items-center gap-4">
-          <ArchiveButton courseId={course.id} />
+          <ConfirmCourseArchiveButton courseId={course.id} />
           <UpdateCourseModal
             courseId={course.id}
             courseTitle={course.title}
@@ -65,16 +67,11 @@ const CourseDetailsPage = async ({ params }: CourseDetailsPageProps) => {
         <div className="rounded-lg border p-4 space-y-4">
           <div className="flex items-center justify-between">
             <h2 className="text-lg font-semibold">Assignments</h2>
-            <Button size="sm">
-              <Plus className="mr-1 h-4 w-4" />
-              Add
-            </Button>
+            <AddAssignmentModal courseId={course.id} />
           </div>
 
           {course.assignments.length === 0 ? (
-            <p className="text-sm text-muted-foreground">
-              No assignments yet.
-            </p>
+            <p className="text-sm text-muted-foreground">No assignments yet.</p>
           ) : (
             <ul className="space-y-3">
               {course.assignments.map((assignment) => (
@@ -82,20 +79,21 @@ const CourseDetailsPage = async ({ params }: CourseDetailsPageProps) => {
                   key={assignment.id}
                   className="rounded-md border p-3 space-y-1"
                 >
-                  <div className="flex items-center justify-between">
-                    <p className="font-medium">{assignment.title}</p>
-                    <Badge variant="outline">{assignment.status}</Badge>
-                  </div>
+                  <Link href={`/assignments/${assignment.id}`}>
+                    <div className="flex items-center justify-between">
+                      <p className="font-medium">{assignment.title}</p>
+                      <Badge variant="outline">{assignment.status}</Badge>
+                    </div>
 
-                  <div className="flex flex-wrap gap-2 text-xs text-muted-foreground">
-                    <span>Priority: {assignment.priority}</span>
-                    {assignment.dueDate && (
-                      <span>
-                        Due:{" "}
-                        {assignment.dueDate.toLocaleDateString()}
-                      </span>
-                    )}
-                  </div>
+                    <div className="flex flex-wrap gap-2 text-xs text-muted-foreground">
+                      <span>Priority: {assignment.priority}</span>
+                      {assignment.dueDate && (
+                        <span>
+                          Due: {assignment.dueDate.toLocaleDateString()}
+                        </span>
+                      )}
+                    </div>
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -113,16 +111,11 @@ const CourseDetailsPage = async ({ params }: CourseDetailsPageProps) => {
           </div>
 
           {course.notes.length === 0 ? (
-            <p className="text-sm text-muted-foreground">
-              No notes yet.
-            </p>
+            <p className="text-sm text-muted-foreground">No notes yet.</p>
           ) : (
             <ul className="space-y-3">
               {course.notes.map((note) => (
-                <li
-                  key={note.id}
-                  className="rounded-md border p-3"
-                >
+                <li key={note.id} className="rounded-md border p-3">
                   <p className="font-medium">{note.title}</p>
                   <p className="text-xs text-muted-foreground line-clamp-2">
                     {note.content}

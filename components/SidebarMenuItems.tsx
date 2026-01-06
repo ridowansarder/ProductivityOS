@@ -5,8 +5,8 @@ import { usePathname } from "next/navigation";
 import {
   ListTodo,
   LayoutDashboard,
-  MessageSquare,
   PenLine,
+  GraduationCap,
 } from "lucide-react";
 import {
   SidebarMenu,
@@ -24,11 +24,11 @@ const items = [
   {
     title: "Courses",
     url: "/courses",
-    icon: MessageSquare,
+    icon: GraduationCap,
   },
   {
-    title: "Tasks",
-    url: "/tasks",
+    title: "Assignments",
+    url: "/assignments",
     icon: ListTodo,
   },
   {

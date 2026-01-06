@@ -14,7 +14,7 @@ import { SignOutButton } from "@clerk/nextjs";
 import { getOrCreateUser } from "@/lib/getOrCreateUser";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { ModeToggle } from "./ModeToggle";
-import { SidebarMenuItems } from "./SidebarMenuItems"; // Import the new component
+import { SidebarMenuItems } from "./SidebarMenuItems";
 
 export async function DashboardSidebar() {
   const user = await getOrCreateUser();

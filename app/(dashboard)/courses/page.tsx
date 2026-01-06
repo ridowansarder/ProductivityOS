@@ -25,25 +25,17 @@ export default async function CoursesPage() {
     orderBy: {
       createdAt: "desc",
     },
-  });
-
-  const assignments = await prisma.assignment.findMany({
-    where: {
-      courseId: {
-        in: courses.map((course) => course.id),
+    include: {
+      assignments: {
+        where: {
+          isActive: true,
+        },
       },
-      userId: user.clerkUserId,
-      isActive: true,
-    },
-  });
-
-  const notes = await prisma.note.findMany({
-    where: {
-      courseId: {
-        in: courses.map((course) => course.id),
+      notes: {
+        where: {
+          isActive: true,
+        },
       },
-      userId: user.clerkUserId,
-      isActive: true,
     },
   });
 
@@ -80,21 +72,21 @@ export default async function CoursesPage() {
                 <CardContent className="flex flex-col gap-2">
                   <p className="text-muted-foreground">
                     {
-                      assignments.filter(
+                      course.assignments.filter(
                         (assignment) => assignment.courseId === course.id
                       ).length
                     }{" "}
-                    {assignments.filter(
+                    {course.assignments.filter(
                       (assignment) => assignment.courseId === course.id
                     ).length === 1
                       ? "assignment"
                       : "assignments"}
                   </p>
                   <p className="text-muted-foreground">
-                    {notes.filter((note) => note.courseId === course.id).length}{" "}
-                    {notes.filter((note) => note.courseId === course.id)
+                    {course.notes.filter((note) => note.courseId === course.id).length}{" "}
+                    {course.notes.filter((note) => note.courseId === course.id)
                       .length === 1
-                      ? "assignment"
+                      ? "note"
                       : "notes"}
                   </p>
 
