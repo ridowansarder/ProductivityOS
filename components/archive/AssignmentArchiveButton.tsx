@@ -37,7 +37,7 @@ export default function ConfirmAssignmentArchiveButton({ assignmentId }: { assig
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="destructive">Archive Assignment</Button>
+        <Button variant="destructive">Archive</Button>
       </DialogTrigger>
 
       <DialogContent className="sm:max-w-sm">

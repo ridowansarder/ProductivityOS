@@ -55,7 +55,7 @@ export function UpdateAssignmentModal({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline">Update Assignment</Button>
+        <Button variant="outline">Update</Button>
       </DialogTrigger>
 
       <DialogContent className="sm:max-w-md">
@@ -122,9 +122,9 @@ export function UpdateAssignmentModal({
                 className="border rounded-md px-3 py-2"
                 defaultValue={assignment.priority}
               >
-                <option value="LOW">Low</option>
-                <option value="MEDIUM">Medium</option>
-                <option value="HIGH">High</option>
+                <option value="LOW" className="bg-background">Low</option>
+                <option value="MEDIUM" className="bg-background">Medium</option>
+                <option value="HIGH" className="bg-background">High</option>
               </select>
             </div>
 
@@ -139,9 +139,9 @@ export function UpdateAssignmentModal({
                 className="border rounded-md px-3 py-2"
                 defaultValue={assignment.status}
               >
-                <option value="TODO">To do</option>
-                <option value="IN_PROGRESS">In progress</option>
-                <option value="DONE">Done</option>
+                <option value="TODO" className="bg-background">To do</option>
+                <option value="IN_PROGRESS" className="bg-background">In progress</option>
+                <option value="DONE" className="bg-background">Done</option>
               </select>
             </div>
           </div>

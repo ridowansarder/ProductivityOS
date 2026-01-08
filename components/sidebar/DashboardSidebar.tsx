@@ -9,11 +9,11 @@ import {
   SidebarMenu,
   SidebarMenuButton,
 } from "@/components/ui/sidebar";
-import { Separator } from "./ui/separator";
+import { Separator } from "../ui/separator";
 import { SignOutButton } from "@clerk/nextjs";
 import { getOrCreateUser } from "@/lib/getOrCreateUser";
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
-import { ModeToggle } from "./ModeToggle";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import { ModeToggle } from "../theme/ModeToggle";
 import { SidebarMenuItems } from "./SidebarMenuItems";
 
 export async function DashboardSidebar() {
@@ -25,7 +25,6 @@ export async function DashboardSidebar() {
           <SidebarGroupLabel className="flex items-center justify-between">
             <p className="text-lg">ProductivityOS</p>
             <ModeToggle />
-
           </SidebarGroupLabel>
           <Separator className="my-3" />
           <SidebarGroupContent>

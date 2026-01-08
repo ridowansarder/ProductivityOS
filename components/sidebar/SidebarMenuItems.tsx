@@ -3,10 +3,11 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
-  ListTodo,
   LayoutDashboard,
-  PenLine,
-  GraduationCap,
+  ClipboardListIcon,
+  StickyNoteIcon,
+  CheckSquareIcon,
+  BookOpenIcon,
 } from "lucide-react";
 import {
   SidebarMenu,
@@ -24,17 +25,22 @@ const items = [
   {
     title: "Courses",
     url: "/courses",
-    icon: GraduationCap,
+    icon: BookOpenIcon,
   },
   {
     title: "Assignments",
     url: "/assignments",
-    icon: ListTodo,
+    icon: ClipboardListIcon,
   },
   {
     title: "Notes",
     url: "/notes",
-    icon: PenLine,
+    icon: StickyNoteIcon,
+  },
+  {
+    title: "Tasks",
+    url: "/tasks",
+    icon: CheckSquareIcon,
   },
 ];
 

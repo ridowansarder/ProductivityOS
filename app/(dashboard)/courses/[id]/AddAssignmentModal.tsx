@@ -18,11 +18,7 @@ import { createAssignment } from "../../assignments/actions";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 
-type AddAssignmentModalProps = {
-  courseId: string;
-};
-
-export function AddAssignmentModal({ courseId }: AddAssignmentModalProps) {
+export function AddAssignmentModal({ courseId }: { courseId: string }) {
   const [isPending, startTransition] = useTransition();
   const [open, setOpen] = useState(false);
   const router = useRouter();
@@ -45,7 +41,7 @@ export function AddAssignmentModal({ courseId }: AddAssignmentModalProps) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline" disabled={isPending}>
+        <Button disabled={isPending}>
           Add Assignment
         </Button>
       </DialogTrigger>

@@ -54,7 +54,7 @@ export async function createAssignment(formData: FormData) {
   }
 }
 
-export async function updateAssignment(formData: FormData, courseId: string) {
+export async function updateAssignment(formData: FormData, assignmentId: string) {
   const user = await getOrCreateUser();
   if (!user) throw new Error("Unauthorized");
 
@@ -70,7 +70,7 @@ export async function updateAssignment(formData: FormData, courseId: string) {
   try {
     await prisma.assignment.update({
       where: {
-        id: courseId,
+        id: assignmentId,
         userId: user.clerkUserId,
       },
       data: {
