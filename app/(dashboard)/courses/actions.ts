@@ -5,10 +5,11 @@ import { courseValidator } from "@/lib/validators/courseValidator";
 import { getOrCreateUser } from "@/lib/getOrCreateUser";
 import { revalidatePath } from "next/cache";
 import { Prisma } from "@/app/generated/prisma/client";
+import { redirect } from "next/navigation";
 
 export async function createCourse(formData: FormData) {
   const user = await getOrCreateUser();
-  if (!user) throw new Error("Unauthorized");
+  if (!user) redirect("/sign-in");
 
   const data = courseValidator.parse({
     title: formData.get("title"),
@@ -48,7 +49,7 @@ export async function createCourse(formData: FormData) {
 
 export async function updateCourse(formData: FormData, courseId: string) {
   const user = await getOrCreateUser();
-  if (!user) throw new Error("Unauthorized");
+  if (!user) redirect("/sign-in");
 
   const data = courseValidator.parse({
     title: formData.get("title"),
@@ -91,10 +92,10 @@ export async function updateCourse(formData: FormData, courseId: string) {
 
 export async function archiveCourse(courseId: string) {
   const user = await getOrCreateUser();
-  if (!user) throw new Error("Unauthorized");
+  if (!user) redirect("/sign-in");
 
   try {
-    await prisma.course.updateMany({
+    await prisma.course.update({
       where: {
         id: courseId,
         userId: user.clerkUserId,
@@ -114,3 +115,49 @@ export async function archiveCourse(courseId: string) {
   }
 }
 
+export async function deleteCourse(courseId: string) {
+  const user = await getOrCreateUser();
+  if (!user) redirect("/sign-in");
+
+  try {
+    await prisma.course.delete({
+      where: {
+        id: courseId,
+        userId: user.clerkUserId,
+      },
+    });
+    revalidatePath("/courses");
+    return { success: true };
+  } catch (error) {
+    console.error("Error deleting course:", error);
+    return {
+      success: false,
+      error: "An unexpected error occurred",
+    };
+  }
+}
+
+export async function restoreCourse(courseId: string) {
+  const user = await getOrCreateUser();
+  if (!user) redirect("/sign-in");
+
+  try {
+    await prisma.course.update({
+      where: {
+        id: courseId,
+        userId: user.clerkUserId,
+      },
+      data: {
+        isActive: true,
+      },
+    });
+    revalidatePath("/courses");
+    return { success: true };
+  } catch (error) {
+    console.error("Error restoring course:", error);
+    return {
+      success: false,
+      error: "An unexpected error occurred",
+    };
+  }
+}

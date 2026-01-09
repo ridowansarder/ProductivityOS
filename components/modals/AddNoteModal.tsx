@@ -16,21 +16,21 @@ import { Label } from "@/components/ui/label";
 import { useState, useTransition } from "react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
-import { updateNote } from "../../notes/actions";
+import { createNote } from "@/app/(dashboard)/notes/actions";
 import { Textarea } from "@/components/ui/textarea";
 
-export function UpdateNoteModal({ noteId, courseId, noteTitle, noteContent }: { noteId: string, courseId: string, noteTitle: string, noteContent: string }) {
+export function AddNoteModal({ courseId }: { courseId: string }) {
   const [isPending, startTransition] = useTransition();
   const [open, setOpen] = useState(false);
   const router = useRouter();
 
-  const handleUpdateNote = (formData: FormData) => {
+  const handleAddNote = (formData: FormData) => {
     formData.append("courseId", courseId);
 
     startTransition(async () => {
-      const result = await updateNote(formData, noteId);
+      const result = await createNote(formData);
       if (result && result.success) {
-        toast.success("Note updated successfully!");
+        toast.success("Note created successfully!");
         setOpen(false);
         router.refresh();
       } else if (result) {
@@ -42,15 +42,15 @@ export function UpdateNoteModal({ noteId, courseId, noteTitle, noteContent }: { 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button disabled={isPending}>Update Note</Button>
+        <Button disabled={isPending}>Add Note</Button>
       </DialogTrigger>
 
       <DialogContent className="sm:max-w-md">
-        <form action={handleUpdateNote} className="space-y-4">
+        <form action={handleAddNote} className="space-y-4">
           <DialogHeader>
-            <DialogTitle>Update Note</DialogTitle>
+            <DialogTitle>Add Note</DialogTitle>
             <DialogDescription>
-              Update the note details below.
+              Create a new note for this course.
             </DialogDescription>
           </DialogHeader>
 
@@ -65,7 +65,6 @@ export function UpdateNoteModal({ noteId, courseId, noteTitle, noteContent }: { 
                 required
                 disabled={isPending}
                 autoFocus
-                defaultValue={noteTitle}
               />
             </div>
 
@@ -78,7 +77,6 @@ export function UpdateNoteModal({ noteId, courseId, noteTitle, noteContent }: { 
                 placeholder="Enter note content"
                 disabled={isPending}
                 required
-                defaultValue={noteContent}
               />
             </div>
           </div>
@@ -90,7 +88,7 @@ export function UpdateNoteModal({ noteId, courseId, noteTitle, noteContent }: { 
               </Button>
             </DialogClose>
             <Button type="submit" disabled={isPending}>
-              {isPending ? "Updating..." : "Update"}
+              {isPending ? "Creating..." : "Create"}
             </Button>
           </DialogFooter>
         </form>

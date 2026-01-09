@@ -1,8 +1,8 @@
 import prisma from "@/lib/prisma";
 import { getOrCreateUser } from "@/lib/getOrCreateUser";
 import { notFound, redirect } from "next/navigation";
-import ConfirmNoteArchiveButton from "@/components/archive/NoteArchiveButton";
-import { UpdateNoteModal } from "./UpdateNoteModal";
+import { ConfirmNoteArchiveButton } from "@/components/confirmButtons/NoteButtons";
+import { UpdateNoteModal } from "@/components/modals/UpdateNoteModal";
 
 const NoteDetailsPage = async ({
   params,
@@ -40,7 +40,12 @@ const NoteDetailsPage = async ({
 
         <div className="flex items-center gap-4">
           <ConfirmNoteArchiveButton noteId={note.id} />
-          <UpdateNoteModal noteId={note.id} courseId={note.courseId} noteTitle={note.title} noteContent={note.content} />
+          <UpdateNoteModal
+            noteId={note.id}
+            courseId={note.courseId}
+            noteTitle={note.title}
+            noteContent={note.content}
+          />
         </div>
       </div>
 

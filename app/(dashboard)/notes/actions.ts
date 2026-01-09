@@ -75,7 +75,7 @@ export async function archiveNote(noteId: string) {
   if (!user) redirect("/sign-in");
 
   try {
-    await prisma.note.updateMany({
+    await prisma.note.update({
       where: {
         id: noteId,
         userId: user.clerkUserId,
@@ -88,6 +88,53 @@ export async function archiveNote(noteId: string) {
     return { success: true };
   } catch (error) {
     console.error("Error archiving course:", error);
+    return {
+      success: false,
+      error: "An unexpected error occurred",
+    };
+  }
+}
+
+export async function deleteNote(noteId: string) {
+  const user = await getOrCreateUser();
+  if (!user) redirect("/sign-in");
+
+  try {
+    await prisma.note.delete({
+      where: {
+        id: noteId,
+        userId: user.clerkUserId,
+      },
+    });
+    revalidatePath("/notes");
+    return { success: true };
+  } catch (error) {
+    console.error("Error deleting course:", error);
+    return {
+      success: false,
+      error: "An unexpected error occurred",
+    };
+  }
+}
+
+export async function restoreNote(noteId: string) {
+  const user = await getOrCreateUser();
+  if (!user) redirect("/sign-in");
+
+  try {
+    await prisma.note.update({
+      where: {
+        id: noteId,
+        userId: user.clerkUserId,
+      },
+      data: {
+        isActive: true,
+      },
+    });
+    revalidatePath("/notes");
+    return { success: true };
+  } catch (error) {
+    console.error("Error restoring course:", error);
     return {
       success: false,
       error: "An unexpected error occurred",

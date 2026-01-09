@@ -1,4 +1,5 @@
 "use client";
+
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -12,73 +13,86 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useTransition, useState } from "react";
-import { updateCourse } from "../actions";
+import { useState, useTransition } from "react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { updateNote } from "@/app/(dashboard)/notes/actions";
+import { Textarea } from "@/components/ui/textarea";
 
-export function UpdateCourseModal({
+export function UpdateNoteModal({
+  noteId,
   courseId,
-  courseTitle,
-  courseSemester,
+  noteTitle,
+  noteContent,
 }: {
+  noteId: string;
   courseId: string;
-  courseTitle: string;
-  courseSemester?: string | null;
+  noteTitle: string;
+  noteContent: string;
 }) {
-  const [open, setOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
+  const [open, setOpen] = useState(false);
   const router = useRouter();
-  const handleUpdate = (formData: FormData) =>
-    startTransition(async () => {
-      const result = await updateCourse(formData, courseId);
 
+  const handleUpdateNote = (formData: FormData) => {
+    formData.append("courseId", courseId);
+
+    startTransition(async () => {
+      const result = await updateNote(formData, noteId);
       if (result && result.success) {
+        toast.success("Note updated successfully!");
         setOpen(false);
-        toast.success("Course updated successfully!");
         router.refresh();
       } else if (result) {
         toast.error(result.error);
       }
     });
+  };
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline">Update Course</Button>
+        <Button disabled={isPending}>Update Note</Button>
       </DialogTrigger>
+
       <DialogContent className="sm:max-w-md">
-        <form action={handleUpdate} className="space-y-4">
+        <form action={handleUpdateNote} className="space-y-4">
           <DialogHeader>
-            <DialogTitle>Update Course</DialogTitle>
+            <DialogTitle>Update Note</DialogTitle>
             <DialogDescription>
-              Make changes to your course here. Click save when you&apos;re
-              done.
+              Update the note details below.
             </DialogDescription>
           </DialogHeader>
+
           <div className="grid gap-4">
+            {/* Title */}
             <div className="grid gap-3">
               <Label htmlFor="title">Title</Label>
               <Input
                 id="title"
                 name="title"
-                placeholder="Enter new course title"
+                placeholder="Enter note title"
                 required
                 disabled={isPending}
                 autoFocus
-                defaultValue={courseTitle}
+                defaultValue={noteTitle}
               />
             </div>
-            <div className="grid gap-3">
-              <Label htmlFor="semester">Semester</Label>
-              <Input
-                id="semester"
-                name="semester"
-                placeholder="Enter semester (optional)"
+
+            {/* Content */}
+            <div className="grid gap-3 max-h-50 overflow-y-auto">
+              <Label htmlFor="content">Content</Label>
+              <Textarea
+                id="content"
+                name="content"
+                placeholder="Enter note content"
                 disabled={isPending}
-                defaultValue={courseSemester || ""}
+                required
+                defaultValue={noteContent}
               />
             </div>
           </div>
+
           <DialogFooter>
             <DialogClose asChild>
               <Button variant="outline" type="button" disabled={isPending}>
@@ -86,7 +100,7 @@ export function UpdateCourseModal({
               </Button>
             </DialogClose>
             <Button type="submit" disabled={isPending}>
-              {isPending ? "Saving..." : "Save changes"}
+              {isPending ? "Updating..." : "Update"}
             </Button>
           </DialogFooter>
         </form>

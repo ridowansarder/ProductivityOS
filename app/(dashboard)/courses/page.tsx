@@ -1,6 +1,6 @@
 import prisma from "@/lib/prisma";
 import { getOrCreateUser } from "@/lib/getOrCreateUser";
-import { AddCourseModal } from "./AddCourseModal";
+import { AddCourseModal } from "@/components/modals/AddCourseModal";
 import Link from "next/link";
 import {
   Card,

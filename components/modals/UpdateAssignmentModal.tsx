@@ -13,45 +13,58 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useState, useTransition } from "react";
-import { createAssignment } from "../../assignments/actions";
+import { useTransition, useState } from "react";
+import { updateAssignment } from "@/app/(dashboard)/assignments/actions";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 
-export function AddAssignmentModal({ courseId }: { courseId: string }) {
-  const [isPending, startTransition] = useTransition();
+type Assignment = {
+  id: string;
+  title: string;
+  description?: string | null;
+  dueDate?: Date | null;
+  priority: "LOW" | "MEDIUM" | "HIGH";
+  status: "TODO" | "IN_PROGRESS" | "DONE";
+  courseId: string;
+};
+
+export function UpdateAssignmentModal({
+  assignment,
+}: {
+  assignment: Assignment;
+}) {
   const [open, setOpen] = useState(false);
+  const [isPending, startTransition] = useTransition();
   const router = useRouter();
 
-  const handleAddAssignment = (formData: FormData) => {
-    formData.append("courseId", courseId);
-
+  const handleUpdate = (formData: FormData) =>
     startTransition(async () => {
-      const result = await createAssignment(formData);
+      formData.append("courseId", assignment.courseId);
+
+      const result = await updateAssignment(formData, assignment.id);
+
       if (result && result.success) {
-        toast.success("Assignment created successfully!");
         setOpen(false);
+        toast.success("Assignment updated successfully!");
         router.refresh();
       } else if (result) {
         toast.error(result.error);
       }
     });
-  };
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button disabled={isPending}>
-          Add Assignment
-        </Button>
+        <Button variant="outline">Update</Button>
       </DialogTrigger>
 
       <DialogContent className="sm:max-w-md">
-        <form action={handleAddAssignment} className="space-y-4">
+        <form action={handleUpdate} className="space-y-4">
           <DialogHeader>
-            <DialogTitle>Add Assignment</DialogTitle>
+            <DialogTitle>Update Assignment</DialogTitle>
             <DialogDescription>
-              Create a new assignment for this course.
+              Make changes to your assignment here. Click save when you&apos;re
+              done.
             </DialogDescription>
           </DialogHeader>
 
@@ -66,6 +79,7 @@ export function AddAssignmentModal({ courseId }: { courseId: string }) {
                 required
                 disabled={isPending}
                 autoFocus
+                defaultValue={assignment.title}
               />
             </div>
 
@@ -77,6 +91,7 @@ export function AddAssignmentModal({ courseId }: { courseId: string }) {
                 name="description"
                 placeholder="Optional description"
                 disabled={isPending}
+                defaultValue={assignment.description || ""}
               />
             </div>
 
@@ -88,6 +103,11 @@ export function AddAssignmentModal({ courseId }: { courseId: string }) {
                 name="dueDate"
                 type="date"
                 disabled={isPending}
+                defaultValue={
+                  assignment.dueDate
+                    ? assignment.dueDate.toISOString().split("T")[0]
+                    : ""
+                }
               />
             </div>
 
@@ -97,19 +117,14 @@ export function AddAssignmentModal({ courseId }: { courseId: string }) {
               <select
                 id="priority"
                 name="priority"
+                required
                 disabled={isPending}
                 className="border rounded-md px-3 py-2"
-                defaultValue="MEDIUM"
+                defaultValue={assignment.priority}
               >
-                <option value="LOW" className="bg-background">
-                  Low
-                </option>
-                <option value="MEDIUM" className="bg-background">
-                  Medium
-                </option>
-                <option value="HIGH" className="bg-background">
-                  High
-                </option>
+                <option value="LOW" className="bg-background">Low</option>
+                <option value="MEDIUM" className="bg-background">Medium</option>
+                <option value="HIGH" className="bg-background">High</option>
               </select>
             </div>
 
@@ -119,19 +134,14 @@ export function AddAssignmentModal({ courseId }: { courseId: string }) {
               <select
                 id="status"
                 name="status"
+                required
                 disabled={isPending}
                 className="border rounded-md px-3 py-2"
-                defaultValue="TODO"
+                defaultValue={assignment.status}
               >
-                <option value="TODO" className="bg-background">
-                  To do
-                </option>
-                <option value="IN_PROGRESS" className="bg-background">
-                  In progress
-                </option>
-                <option value="DONE" className="bg-background">
-                  Done
-                </option>
+                <option value="TODO" className="bg-background">To do</option>
+                <option value="IN_PROGRESS" className="bg-background">In progress</option>
+                <option value="DONE" className="bg-background">Done</option>
               </select>
             </div>
           </div>
@@ -143,7 +153,7 @@ export function AddAssignmentModal({ courseId }: { courseId: string }) {
               </Button>
             </DialogClose>
             <Button type="submit" disabled={isPending}>
-              {isPending ? "Creating..." : "Create"}
+              {isPending ? "Saving..." : "Save changes"}
             </Button>
           </DialogFooter>
         </form>

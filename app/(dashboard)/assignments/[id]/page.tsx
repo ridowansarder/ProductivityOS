@@ -2,8 +2,8 @@ import prisma from "@/lib/prisma";
 import { getOrCreateUser } from "@/lib/getOrCreateUser";
 import { notFound } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
-import { UpdateAssignmentModal } from "./UpdateAssignmentModal";
-import ConfirmAssignmentArchiveButton from "@/components/archive/AssignmentArchiveButton";
+import { UpdateAssignmentModal } from "@/components/modals/UpdateAssignmentModal";
+import {ConfirmAssignmentArchiveButton} from "@/components/confirmButtons/AssignmentButtons";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface AssignmentDetailsPageProps {

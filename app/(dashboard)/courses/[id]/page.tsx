@@ -1,12 +1,12 @@
 import prisma from "@/lib/prisma";
 import { getOrCreateUser } from "@/lib/getOrCreateUser";
 import { notFound } from "next/navigation";
-import { UpdateCourseModal } from "./UpdateCourseModal";
+import { UpdateCourseModal } from "@/components/modals/UpdateCourseModal";
 import { Badge } from "@/components/ui/badge";
-import { AddAssignmentModal } from "./AddAssignmentModal";
+import { AddAssignmentModal } from "@/components/modals/AddAssignmentModal";
 import Link from "next/link";
-import ConfirmCourseArchiveButton from "@/components/archive/CourseArchiveButton";
-import { AddNoteModal } from "./AddNoteModal";
+import { ConfirmCourseArchiveButton } from "@/components/confirmButtons/CourseButtons";
+import { AddNoteModal } from "@/components/modals/AddNoteModal";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const CourseDetailsPage = async ({

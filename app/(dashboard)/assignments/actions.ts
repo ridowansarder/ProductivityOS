@@ -5,10 +5,11 @@ import { getOrCreateUser } from "@/lib/getOrCreateUser";
 import { revalidatePath } from "next/cache";
 import { Prisma } from "@/app/generated/prisma/client";
 import { assignmentValidator } from "@/lib/validators/assignmentValidator";
+import { redirect } from "next/navigation";
 
 export async function createAssignment(formData: FormData) {
   const user = await getOrCreateUser();
-  if (!user) throw new Error("Unauthorized");
+  if (!user) redirect("/sign-in");
 
   const data = assignmentValidator.parse({
     title: formData.get("title"),
@@ -31,7 +32,7 @@ export async function createAssignment(formData: FormData) {
         userId: user.clerkUserId,
       },
     });
-    revalidatePath('/assignments');
+    revalidatePath("/assignments");
     return { success: true };
   } catch (error) {
     console.error("Error creating assignment:", error);
@@ -54,9 +55,12 @@ export async function createAssignment(formData: FormData) {
   }
 }
 
-export async function updateAssignment(formData: FormData, assignmentId: string) {
+export async function updateAssignment(
+  formData: FormData,
+  assignmentId: string
+) {
   const user = await getOrCreateUser();
-  if (!user) throw new Error("Unauthorized");
+  if (!user) redirect("/sign-in");
 
   const data = assignmentValidator.parse({
     title: formData.get("title"),
@@ -83,7 +87,7 @@ export async function updateAssignment(formData: FormData, assignmentId: string)
         userId: user.clerkUserId,
       },
     });
-    revalidatePath('/assignments');
+    revalidatePath("/assignments");
     return { success: true };
   } catch (error) {
     console.error("Error updating assignment:", error);
@@ -108,10 +112,10 @@ export async function updateAssignment(formData: FormData, assignmentId: string)
 
 export async function archiveAssignment(assignmentId: string) {
   const user = await getOrCreateUser();
-  if (!user) throw new Error("Unauthorized");
+  if (!user) redirect("/sign-in");
 
   try {
-    await prisma.assignment.updateMany({
+    await prisma.assignment.update({
       where: {
         id: assignmentId,
         userId: user.clerkUserId,
@@ -131,3 +135,49 @@ export async function archiveAssignment(assignmentId: string) {
   }
 }
 
+export async function deleteAssignment(assignmentId: string) {
+  const user = await getOrCreateUser();
+  if (!user) redirect("/sign-in");
+
+  try {
+    await prisma.assignment.delete({
+      where: {
+        id: assignmentId,
+        userId: user.clerkUserId,
+      },
+    });
+    revalidatePath("/assignments");
+    return { success: true };
+  } catch (error) {
+    console.error("Error deleting course:", error);
+    return {
+      success: false,
+      error: "An unexpected error occurred",
+    };
+  }
+}
+
+export async function restoreAssignment(assignmentId: string) {
+  const user = await getOrCreateUser();
+  if (!user) redirect("/sign-in");
+
+  try {
+    await prisma.assignment.update({
+      where: {
+        id: assignmentId,
+        userId: user.clerkUserId,
+      },
+      data: {
+        isActive: true,
+      },
+    });
+    revalidatePath("/assignments");
+    return { success: true };
+  } catch (error) {
+    console.error("Error restoring course:", error);
+    return {
+      success: false,
+      error: "An unexpected error occurred",
+    };
+  }
+}
