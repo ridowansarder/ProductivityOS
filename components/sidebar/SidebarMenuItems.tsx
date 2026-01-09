@@ -6,8 +6,8 @@ import {
   LayoutDashboard,
   ClipboardListIcon,
   StickyNoteIcon,
-  CheckSquareIcon,
   BookOpenIcon,
+  ArchiveIcon,
 } from "lucide-react";
 import {
   SidebarMenu,
@@ -38,9 +38,9 @@ const items = [
     icon: StickyNoteIcon,
   },
   {
-    title: "Tasks",
-    url: "/tasks",
-    icon: CheckSquareIcon,
+    title: "Archives",
+    url: "/archives",
+    icon: ArchiveIcon,
   },
 ];
 
