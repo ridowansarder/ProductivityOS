@@ -127,6 +127,7 @@ export async function deleteCourse(courseId: string) {
       },
     });
     revalidatePath("/courses");
+    revalidatePath("/archives");
     return { success: true };
   } catch (error) {
     console.error("Error deleting course:", error);
@@ -152,6 +153,7 @@ export async function restoreCourse(courseId: string) {
       },
     });
     revalidatePath("/courses");
+    revalidatePath("/archives");
     return { success: true };
   } catch (error) {
     console.error("Error restoring course:", error);

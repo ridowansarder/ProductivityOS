@@ -8,8 +8,8 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import Link from "next/link";
-import { AssignmentStatusToggle } from "@/components/toggle/AssignmentToggleStatus";
 import { redirect } from "next/navigation";
+import { Badge } from "@/components/ui/badge";
 
 const DashboardPage = async () => {
   const user = await getOrCreateUser();
@@ -18,7 +18,7 @@ const DashboardPage = async () => {
   const overdueAssignments = await prisma.assignment.count({
     where: {
       userId: user.clerkUserId,
-      status: "TODO",
+      status: { in: ["TODO", "IN_PROGRESS"] },
       isActive: true,
       dueDate: { lt: startOfToday() },
     },
@@ -43,7 +43,7 @@ const DashboardPage = async () => {
   const weekAssignments = await prisma.assignment.count({
     where: {
       userId: user.clerkUserId,
-      status: "TODO",
+      status: { in: ["TODO", "IN_PROGRESS"] },
       isActive: true,
       dueDate: {
         gt: endOfToday(),
@@ -161,22 +161,22 @@ const DashboardPage = async () => {
             <ul className="space-y-2">
               {todayAssignments.map((assignment) => (
                 <li key={assignment.id} className="rounded-md border p-3">
-                  <div className="flex items-center justify-between">
-                    <Link
-                      href={`/assignments/${assignment.id}`}
-                      className="space-y-2"
-                    >
+                  <Link
+                    href={`/assignments/${assignment.id}`}
+                    className="space-y-2"
+                  >
+                    <div className="flex items-center justify-between">
                       <p className="font-medium">{assignment.title}</p>
-                    </Link>
-                    <AssignmentStatusToggle
-                      assignmentId={assignment.id}
-                      status={assignment.status}
-                    />
-                  </div>
+                      <Badge>{assignment.status}</Badge>
+                    </div>
 
-                  <span className="text-muted-foreground">
-                    Course: {assignment.course.title}
-                  </span>
+                    <div className="flex justify-between gap-2 text-xs text-muted-foreground">
+                      <span>Course: {assignment.course.title}</span>
+                      {assignment.dueDate && (
+                        <span>Priority: {assignment.priority}</span>
+                      )}
+                    </div>
+                  </Link>
                 </li>
               ))}
             </ul>
