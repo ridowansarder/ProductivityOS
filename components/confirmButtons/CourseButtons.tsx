@@ -12,7 +12,11 @@ import {
   DialogClose,
 } from "@/components/ui/dialog";
 import { toast } from "sonner";
-import { archiveCourse, deleteCourse, restoreCourse } from "@/app/(dashboard)/courses/actions";
+import {
+  archiveCourse,
+  deleteCourse,
+  restoreCourse,
+} from "@/app/(dashboard)/courses/actions";
 import { useRouter } from "next/navigation";
 
 export function ConfirmCourseArchiveButton({ courseId }: { courseId: string }) {
@@ -50,7 +54,9 @@ export function ConfirmCourseArchiveButton({ courseId }: { courseId: string }) {
 
         <DialogFooter>
           <DialogClose asChild>
-            <Button variant="outline" disabled={isPending}>Cancel</Button>
+            <Button variant="outline" disabled={isPending}>
+              Cancel
+            </Button>
           </DialogClose>
           <Button
             variant="destructive"
@@ -93,13 +99,16 @@ export function ConfirmCourseDeleteButton({ courseId }: { courseId: string }) {
         <DialogHeader>
           <DialogTitle>Confirm Delete</DialogTitle>
           <DialogDescription>
-            Are you sure you want to delete this course? This action cannot be undone.
+            Are you sure you want to delete this course? This action cannot be
+            undone.
           </DialogDescription>
         </DialogHeader>
 
         <DialogFooter>
           <DialogClose asChild>
-            <Button variant="outline" disabled={isPending}>Cancel</Button>
+            <Button variant="outline" disabled={isPending}>
+              Cancel
+            </Button>
           </DialogClose>
           <Button
             variant="destructive"
@@ -148,13 +157,11 @@ export function ConfirmCourseRestoreButton({ courseId }: { courseId: string }) {
 
         <DialogFooter>
           <DialogClose asChild>
-            <Button variant="outline" disabled={isPending}>Cancel</Button>
+            <Button variant="outline" disabled={isPending}>
+              Cancel
+            </Button>
           </DialogClose>
-          <Button
-            variant="destructive"
-            onClick={handleConfirm}
-            disabled={isPending}
-          >
+          <Button onClick={handleConfirm} disabled={isPending}>
             {isPending ? "Restoring..." : "Restore"}
           </Button>
         </DialogFooter>

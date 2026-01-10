@@ -2,12 +2,12 @@ import prisma from "@/lib/prisma";
 import { getOrCreateUser } from "@/lib/getOrCreateUser";
 import { notFound } from "next/navigation";
 import { UpdateCourseModal } from "@/components/modals/UpdateCourseModal";
-import { Badge } from "@/components/ui/badge";
 import { AddAssignmentModal } from "@/components/modals/AddAssignmentModal";
 import Link from "next/link";
 import { ConfirmCourseArchiveButton } from "@/components/confirmButtons/CourseButtons";
 import { AddNoteModal } from "@/components/modals/AddNoteModal";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { AssignmentStatusToggle } from "@/components/toggle/AssignmentToggleStatus";
 
 const CourseDetailsPage = async ({
   params,
@@ -101,21 +101,24 @@ const CourseDetailsPage = async ({
                     key={assignment.id}
                     className="rounded-md border p-3 space-y-1"
                   >
-                    <Link href={`/assignments/${assignment.id}`}>
-                      <div className="flex items-center justify-between">
+                    <div className="flex items-center justify-between">
+                      <Link href={`/assignments/${assignment.id}`}>
                         <p className="font-medium">{assignment.title}</p>
-                        <Badge variant="outline">{assignment.status}</Badge>
-                      </div>
+                      </Link>
+                      <AssignmentStatusToggle
+                        assignmentId={assignment.id}
+                        status={assignment.status}
+                      />
+                    </div>
 
-                      <div className="flex flex-wrap gap-2 text-xs text-muted-foreground">
-                        <span>Priority: {assignment.priority}</span>
-                        {assignment.dueDate && (
-                          <span>
-                            Due: {assignment.dueDate.toLocaleDateString()}
-                          </span>
-                        )}
-                      </div>
-                    </Link>
+                    <div className="flex flex-wrap gap-2 text-xs text-muted-foreground">
+                      <span>Priority: {assignment.priority}</span>
+                      {assignment.dueDate && (
+                        <span>
+                          Due: {assignment.dueDate.toLocaleDateString()}
+                        </span>
+                      )}
+                    </div>
                   </li>
                 ))}
               </ul>

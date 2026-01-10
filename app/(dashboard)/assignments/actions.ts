@@ -181,3 +181,47 @@ export async function restoreAssignment(assignmentId: string) {
     };
   }
 }
+
+export async function toggleAssignmentStatus(assignmentId: string) {
+  const user = await getOrCreateUser();
+  if (!user) redirect("/sign-in");
+
+  try {
+    const assignment = await prisma.assignment.findUnique({
+      where: {
+        id: assignmentId,
+        userId: user.clerkUserId,
+      },
+    });
+
+    if (!assignment) {
+      return {
+        success: false,
+        error: "Assignment not found",
+      };
+    }
+
+    await prisma.assignment.update({
+      where: {
+        id: assignmentId,
+        userId: user.clerkUserId,
+      },
+      data: {
+        status:
+          assignment.status === "TODO"
+            ? "IN_PROGRESS"
+            : assignment.status === "IN_PROGRESS"
+            ? "DONE"
+            : "TODO",
+      },
+    });
+    revalidatePath("/assignments");
+    return { success: true };
+  } catch (error) {
+    console.error("Error toggling assignment status:", error);
+    return {
+      success: false,
+      error: "An unexpected error occurred",
+    };
+  }
+}

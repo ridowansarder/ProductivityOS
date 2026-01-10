@@ -157,7 +157,6 @@ export function ConfirmNoteRestoreButton({
             </Button>
           </DialogClose>
           <Button
-            variant="destructive"
             onClick={handleConfirm}
             disabled={isPending}
           >

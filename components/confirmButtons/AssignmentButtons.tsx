@@ -168,7 +168,6 @@ export function ConfirmAssignmentRestoreButton({ assignmentId }: { assignmentId:
             <Button variant="outline" disabled={isPending}>Cancel</Button>
           </DialogClose>
           <Button
-            variant="destructive"
             onClick={handleConfirm}
             disabled={isPending}
           >

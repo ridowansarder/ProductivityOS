@@ -7,10 +7,13 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import Link from "next/link";
+import { AssignmentStatusToggle } from "@/components/toggle/AssignmentToggleStatus";
+import { redirect } from "next/navigation";
 
 const DashboardPage = async () => {
   const user = await getOrCreateUser();
-  if (!user) return null;
+  if (!user) return redirect("/sign-in");
 
   const overdueAssignments = await prisma.assignment.count({
     where: {
@@ -22,15 +25,18 @@ const DashboardPage = async () => {
     orderBy: { dueDate: "asc" },
   });
 
-  const todayAssignments = await prisma.assignment.count({
+  const todayAssignments = await prisma.assignment.findMany({
     where: {
       userId: user.clerkUserId,
-      status: "TODO",
+      status: { in: ["TODO", "IN_PROGRESS"] },
       isActive: true,
       dueDate: {
         gte: startOfToday(),
         lte: endOfToday(),
       },
+    },
+    include: {
+      course: true,
     },
   });
 
@@ -95,7 +101,9 @@ const DashboardPage = async () => {
         <Card>
           <CardHeader className="text-center">
             <CardTitle>Today&apos;s Assignments</CardTitle>
-            <h1 className="text-2xl font-semibold">{todayAssignments}</h1>
+            <h1 className="text-2xl font-semibold">
+              {todayAssignments.length}
+            </h1>
             <CardDescription>
               The number of assignments to be completed today
             </CardDescription>
@@ -131,6 +139,49 @@ const DashboardPage = async () => {
             <CardDescription>The number of active courses</CardDescription>
           </CardHeader>
         </Card>
+      </div>
+
+      <div className="h-px bg-border my-4" />
+      <div className="space-y-6 max-w-2xl">
+        <div className="space-y-1">
+          <h1 className="text-2xl font-semibold">Today&apos;s Assignments</h1>
+          <p className="text-muted-foreground">
+            You must complete these assignments today
+          </p>
+        </div>
+
+        <div className="rounded-lg border p-4 space-y-4">
+          {todayAssignments.length === 0 ? (
+            <div className="text-center p-4">
+              <p className="text-muted-foreground">
+                No assignments for today. Have a nice day!
+              </p>
+            </div>
+          ) : (
+            <ul className="space-y-2">
+              {todayAssignments.map((assignment) => (
+                <li key={assignment.id} className="rounded-md border p-3">
+                  <div className="flex items-center justify-between">
+                    <Link
+                      href={`/assignments/${assignment.id}`}
+                      className="space-y-2"
+                    >
+                      <p className="font-medium">{assignment.title}</p>
+                    </Link>
+                    <AssignmentStatusToggle
+                      assignmentId={assignment.id}
+                      status={assignment.status}
+                    />
+                  </div>
+
+                  <span className="text-muted-foreground">
+                    Course: {assignment.course.title}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
       </div>
     </div>
   );

@@ -3,16 +3,15 @@ import { getOrCreateUser } from "@/lib/getOrCreateUser";
 import { notFound } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
 import { UpdateAssignmentModal } from "@/components/modals/UpdateAssignmentModal";
-import {ConfirmAssignmentArchiveButton} from "@/components/confirmButtons/AssignmentButtons";
+import { ConfirmAssignmentArchiveButton } from "@/components/confirmButtons/AssignmentButtons";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-
-interface AssignmentDetailsPageProps {
-  params: Promise<{ id: string }>;
-}
+import { AssignmentStatusToggle } from "@/components/toggle/AssignmentToggleStatus";
 
 const AssignmentDetailsPage = async ({
   params,
-}: AssignmentDetailsPageProps) => {
+}: {
+  params: Promise<{ id: string }>;
+}) => {
   const { id } = await params;
   const user = await getOrCreateUser();
   if (!user) return null;
@@ -63,7 +62,7 @@ const AssignmentDetailsPage = async ({
             <div className="space-y-3 text-sm">
               <div className="flex items-center justify-between">
                 <span className="text-muted-foreground">Status</span>
-                <Badge variant="outline">{assignment.status}</Badge>
+                <AssignmentStatusToggle assignmentId={assignment.id} status={assignment.status} />
               </div>
 
               <div className="flex items-center justify-between">
