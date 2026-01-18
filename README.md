@@ -20,7 +20,6 @@
 
 ### **Notes System**
 - Course-linked notes
-- Rich text editing
 - Archive instead of delete
 
 ### **Archive-First Safety**
