@@ -3,7 +3,6 @@ import { getOrCreateUser } from "@/lib/getOrCreateUser";
 import { notFound, redirect } from "next/navigation";
 import { ConfirmNoteArchiveButton } from "@/components/confirmButtons/NoteButtons";
 import NoteContent from "@/components/NoteContent";
-
 const NoteDetailsPage = async ({
   params,
 }: {
@@ -12,20 +11,11 @@ const NoteDetailsPage = async ({
   const { id } = await params;
   const user = await getOrCreateUser();
   if (!user) return redirect("/sign-in");
-
   const note = await prisma.note.findFirst({
-    where: {
-      id,
-      userId: user.clerkUserId,
-      isActive: true,
-    },
-    include: {
-      course: true,
-    },
+    where: { id, userId: user.clerkUserId, isActive: true },
+    include: { course: true },
   });
-
   if (!note) notFound();
-
   return (
     <div className="py-6 px-6 md:px-12 space-y-6 w-full">
       {/* Header */}
@@ -36,21 +26,20 @@ const NoteDetailsPage = async ({
             Course: {note.course.title}
           </p>
         </div>
-
-        <ConfirmNoteArchiveButton noteId={note.id} />
+        <div className="flex items-center gap-4">
+          <ConfirmNoteArchiveButton noteId={note.id} />
+        </div>
       </div>
-
       <div className="h-px bg-border" />
-
-      {/* CLIENT UI */}
-      <NoteContent
-        noteId={note.id}
-        title={note.title}
-        content={note.content}
-        courseId={note.courseId}
-      />
+      <div>
+        <NoteContent
+          noteId={note.id}
+          courseId={note.courseId}
+          noteContent={note.content}
+          noteTitle={note.title}
+        />
+      </div>
     </div>
   );
 };
-
 export default NoteDetailsPage;

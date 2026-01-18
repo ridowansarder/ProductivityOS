@@ -1,80 +1,87 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 import { updateNote } from "@/app/(dashboard)/notes/actions";
-
-type Props = {
-  noteId: string;
-  title: string;
-  content: string;
-  courseId: string;
-};
 
 export default function NoteContent({
   noteId,
-  title: initialTitle,
-  content: initialContent,
-}: Props) {
+  courseId,
+  noteTitle,
+  noteContent,
+}: {
+  noteId: string;
+  courseId: string;
+  noteTitle: string;
+  noteContent: string;
+}) {
   const [isEditing, setIsEditing] = useState(false);
-  const [title, setTitle] = useState(initialTitle);
-  const [content, setContent] = useState(initialContent);
+  const [isPending, startTransition] = useTransition();
+  const router = useRouter();
+
+  const handleUpdateNote = (formData: FormData) => {
+    formData.append("courseId", courseId);
+
+    startTransition(async () => {
+      const result = await updateNote(formData, noteId);
+
+      if (result?.success) {
+        toast.success("Note updated successfully!");
+        setIsEditing(false);
+        router.refresh();
+      } else {
+        toast.error(result?.error || "Something went wrong");
+      }
+    });
+  };
+
+  if (!isEditing) {
+    return (
+      <div className="max-w-3xl">
+        <Button className="mb-4" onClick={() => setIsEditing(true)} disabled={isPending} variant={"outline"}>
+          Update Note
+        </Button>
+        <div className="whitespace-pre-wrap">
+          {noteContent}
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="max-w-3xl">
-      {!isEditing && (
-        <>
-          <div className="prose prose-neutral max-w-none whitespace-pre-wrap">
-            {initialContent}
-          </div>
+    <form action={handleUpdateNote} className="max-w-3xl space-y-4">
+      <Input
+        name="title"
+        defaultValue={noteTitle}
+        disabled={isPending}
+        className="font-semibold"
+      />
 
-          <button
-            onClick={() => setIsEditing(true)}
-            className="mt-6 rounded bg-black px-4 py-2 text-white"
-          >
-            Edit
-          </button>
-        </>
-      )}
+      <Textarea
+        name="content"
+        defaultValue={noteContent}
+        disabled={isPending}
+        className="max-h-100"
+      />
 
-      {isEditing && (
-        <form
-          action={async () => {
-            await updateNote({
-              noteId,
-              title,
-              content,
-            });
-            setIsEditing(false);
-          }}
-          className="space-y-4"
+      <div className="flex gap-3">
+        <Button type="submit" disabled={isPending}>
+          {isPending ? "Updating..." : "Update Note"}
+        </Button>
+
+        <Button
+          type="button"
+          variant="outline"
+          onClick={() => setIsEditing(false)}
+          disabled={isPending}
         >
-          <input
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            className="w-full rounded border p-2 text-2xl font-semibold"
-          />
-
-          <textarea
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-            className="w-full min-h-[60vh] rounded border p-4 leading-7 resize-none"
-          />
-
-          <div className="flex gap-3">
-            <button className="rounded bg-black px-4 py-2 text-white">
-              Save
-            </button>
-
-            <button
-              type="button"
-              onClick={() => setIsEditing(false)}
-              className="text-muted-foreground"
-            >
-              Cancel
-            </button>
-          </div>
-        </form>
-      )}
-    </div>
+          Cancel
+        </Button>
+      </div>
+    </form>
   );
 }
