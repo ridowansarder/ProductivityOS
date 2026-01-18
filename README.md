@@ -101,15 +101,6 @@
 
 ---
 
-## Author
-
-**Your Name**
-- GitHub: [@YOUR_USERNAME](https://github.com/YOUR_USERNAME)
-- LinkedIn: [Your Name](https://linkedin.com/in/YOUR_PROFILE)
-- Portfolio: [yourwebsite.com](https://yourwebsite.com)
-
----
-
 ## Acknowledgments
 
 - [Next.js](https://nextjs.org/) - React framework
