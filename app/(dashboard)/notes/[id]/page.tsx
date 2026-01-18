@@ -2,7 +2,7 @@ import prisma from "@/lib/prisma";
 import { getOrCreateUser } from "@/lib/getOrCreateUser";
 import { notFound, redirect } from "next/navigation";
 import { ConfirmNoteArchiveButton } from "@/components/confirmButtons/NoteButtons";
-import { UpdateNoteModal } from "@/components/modals/UpdateNoteModal";
+import NoteContent from "@/components/NoteContent";
 
 const NoteDetailsPage = async ({
   params,
@@ -32,28 +32,23 @@ const NoteDetailsPage = async ({
       <div className="flex flex-col md:flex-row items-start justify-between gap-4">
         <div className="space-y-3">
           <h1 className="text-2xl font-semibold">{note.title}</h1>
-
           <p className="text-sm text-muted-foreground">
             Course: {note.course.title}
           </p>
         </div>
 
-        <div className="flex items-center gap-4">
-          <ConfirmNoteArchiveButton noteId={note.id} />
-          <UpdateNoteModal
-            noteId={note.id}
-            courseId={note.courseId}
-            noteTitle={note.title}
-            noteContent={note.content}
-          />
-        </div>
+        <ConfirmNoteArchiveButton noteId={note.id} />
       </div>
 
       <div className="h-px bg-border" />
 
-      <div>
-        <p className="text-muted-foreground">{note.content}</p>
-      </div>
+      {/* CLIENT UI */}
+      <NoteContent
+        noteId={note.id}
+        title={note.title}
+        content={note.content}
+        courseId={note.courseId}
+      />
     </div>
   );
 };
